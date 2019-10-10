@@ -18,7 +18,7 @@
 // to automatically repeat a process, kill a hung process started with the tool, and log the programs output (filtering logs
 // is also possible). It is hoped that heimdall and bifrost will be a tool you reach for again and again when developing your CLI tool.
 
-package heimdall
+package main
 
 import "github.com/dnoberon/heimdall/cmd"
 
