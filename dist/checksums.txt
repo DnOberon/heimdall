@@ -1,0 +1,4 @@
+b6c1bb542d80676a199c56cbf16f52fd7374f1245b2ae2fcf81064431dee32e7  heimdall_0.1.1_Linux_i386.tar.gz
+d4de4e994ac655cc84313dec868124cc8f1655b5bf99252ffd83cb092dd9ebbb  heimdall_0.1.1_Linux_x86_64.tar.gz
+bb27010ddf04c112def92967cfc455d1e22dab1c61ae44657960c8391575a6fa  heimdall_0.1.1_Darwin_i386.tar.gz
+c80386f63b64e693b2870c73125f617b906dbcc344e1e646ee3d09730ecf1bc3  heimdall_0.1.1_Darwin_x86_64.tar.gz
