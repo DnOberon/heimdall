@@ -26,92 +26,34 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+
 brews:
-  - # Name template of the recipe
-    # Default to project name
-    name: heimdall
-
-    # IDs of the archives to use.
-    # Defaults to all.
-    ids:
-      - all
-
-    # GOARM to specify which 32-bit arm version to use if there are multiple versions
-    # from the build section. Brew formulas support atm only one 32-bit version.
-    # Default is 6 for all artifacts or each id if there a multiple versions.
-    goarm: 6
-
-
-    # NOTE: make sure the url_template, the token and given repo (github or gitlab) owner and name are from the
-    # same kind. We will probably unify this in the next major version like it is done with scoop.
-
-    # Github repository to push the tap to.
+  - ids:
+      - darwin
     github:
       owner: dnoberon
-      name: homebrew-tap
-
-    # OR Gitlab
-    # gitlab:
-    #   owner: gitlab-user
-    #   name: homebrew-tap
-
-    # Gitea is not supported yet, but the support coming
-
-    # Template for the url which is determined by the given Token (github or gitlab)
-    # Default for github is "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    # Default for gitlab is "https://gitlab.com/<repo_owner>/<repo_name>/uploads/{{ .ArtifactUploadHash }}/{{ .ArtifactName }}"
-    url_template: "http://github..com/dnoberon/heimdall/releases/{{ .Tag }}/{{ .ArtifactName }}"
-
-    # Allows you to set a custom download strategy. Note that you'll need
-    # to implement the strategy and add it to your tap repository.
-    # Example: http://lessthanhero.io/post/homebrew-with-private-repo-releases/
-    # Default is empty.
-    download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
-
-    # Allows you to add a custom require_relative at the top of the formula template
-    # Default is empty
-    custom_require: custom_download_strategy
-
-    # Git author used to commit to the repository.
-    # Defaults are shown.
+      name: homebrew-dnoberon
     commit_author:
-      name: goreleaserbot
-      email: goreleaser@carlosbecker.com
+      name: dnoberon
+      email: johnw.darrington@gmail.com
+    caveats: |
+      Live the life of plain text contracting.
+      We are glad you have joined us.
+      Completions are coming shortly.
+    homepage: https://monax.io
+    description: &description |
+      Welcome, dear marmot, to the revolution!
 
-    # Folder inside the repository to put the formula.
-    # Default is the root folder.
-    folder: Formula
+      This is a high level client to the Agreements Network
+      it's written in Go by your furry friends at Monax.
 
-    # Caveats for the user of your binary.
-    # Default is empty.
-    caveats: "How to use this binary"
+      We use it to keep our plain text contracts in sync
+      with our repositories that live on the Agreements
+      Network via the Monax Platform API.
 
-    # Your app's homepage.
-    # Default is empty.
-    homepage: "https://github.com/dnoberon/heimdall"
-
-    # Your app's description.
-    # Default is empty.
-    description: "Software to create fast and easy drum rolls."
-
-    # Setting this will prevent goreleaser to actually try to commit the updated
-    # formula - instead, the formula file will be stored on the dist folder only,
-    # leaving the responsibility of publishing it to the user.
-    # If set to auto, the release will not be uploaded to the homebrew tap
-    # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
-    # Default is false.
-    skip_upload: false
-
-
-    # Specify for packages that run as a service.
-    # Default is empty.
-    plist:
-
-    # So you can `brew test` your formula.
-    # Default is empty.
-    test:
-    # Custom install script for brew.
-    # Default is 'bin.install "program"'.
+      Live the life of plain text contracting.
+    dependencies: []
+    conflicts: []
+    plist: ""
     install: |
-      bin.install "program"
-      ...
+      bin.install "nax"
