@@ -1,4 +1,4 @@
-package heimdall
+package bifrost
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHeimdallExecuteAndRepeat(t *testing.T) {
+func TestBifrostExecuteAndRepeat(t *testing.T) {
 	timer := time.Now()
 	path, _ := filepath.Abs("heimdall")
 
@@ -43,7 +43,7 @@ func TestHeimdallExecuteAndRepeat(t *testing.T) {
 	assert.True(t, time.Now().Sub(timer) > 10*time.Second)
 }
 
-func TestHeimdallExecuteTimeout(t *testing.T) {
+func TestBifrostExecuteTimeout(t *testing.T) {
 	timer := time.Now()
 	path, _ := filepath.Abs("heimdall")
 

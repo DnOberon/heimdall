@@ -17,11 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/dnoberon/heimdall/bifrost"
 	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/dnoberon/heimdall"
 	"github.com/spf13/cobra"
 
 	"github.com/mitchellh/go-homedir"
@@ -32,14 +32,12 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "bifrost",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "heimdall",
+	Short: "Heimdall is a quickly configured monitor for CLI applications.",
+	Long: `Heimdall gives you a quick way to monitor, repeat, and selectively 
+log a CLI application. Quick configuration options allow 
+you to effectively test and monitor a CLI application in
+development`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		absolutePath, err := filepath.Abs(args[0])
@@ -50,13 +48,13 @@ to quickly create a Cobra application.`,
 		repeat, _ := cmd.Flags().GetInt("repeat")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
 
-		config := heimdall.ManagerConfig{
+		config := bifrost.ManagerConfig{
 			AbsolutePath:     absolutePath,
 			Repeat:           repeat,
 			ProgramArguments: args[1:],
 			Timeout:          timeout}
 
-		err = heimdall.Execute(config)
+		err = bifrost.Execute(config)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -80,6 +78,7 @@ func init() {
 	rootCmd.Flags().IntP("repeat", "r", 0, "Designate how many times to repeat your program with supplied arguments")
 	rootCmd.Flags().DurationP("timeout", "t", 0, "Designate when to kill your provided program")
 	rootCmd.Flags().BoolP("log", "l", false, "Toggle logging of provided program's stdout and stderr output to file")
+	rootCmd.Flags().StringP("logFilter", "lf", "", "Allows for log filtering via regex string. Use only valid with log flag")
 	rootCmd.Flags().BoolP("verbose", "v", false, "Toggle display of provided program's stdout and stderr output while heimdall runs")
 }
 

@@ -16,48 +16,12 @@
 // was the ever-vigilant guardian of the gods' stronghold, Asgard - now he will be the guardian of whichever program you choose.
 // Heimdall is designed as both launcher and monitor of short-lived CLI tools and programs. Heimdall provides the ability
 // to automatically repeat a process, kill a hung process started with the tool, and log the programs output (filtering logs
-// is also possible). It is hoped that heimdall will be a tool you reach for again and again when developing your CLI tool.
+// is also possible). It is hoped that heimdall and bifrost will be a tool you reach for again and again when developing your CLI tool.
 
 package heimdall
 
-import (
-	"os/exec"
-	"regexp"
-	"time"
-)
+import "github.com/dnoberon/heimdall/cmd"
 
-type ManagerConfig struct {
-	AbsolutePath     string
-	ProgramArguments []string
-	Timeout          time.Duration
-	Repeat           int
-	Verbose          bool
-	Log              bool
-	LogFilter        regexp.Regexp
-}
-
-func Execute(config ManagerConfig) error {
-	return execute(config)
-}
-
-func execute(config ManagerConfig) error {
-	for i := 0; i < config.Repeat; i++ {
-		command := exec.Command(config.AbsolutePath, config.ProgramArguments...)
-
-		if err := command.Start(); err != nil {
-			return err
-		}
-
-		if config.Timeout > 0 {
-			time.AfterFunc(config.Timeout, func() {
-				command.Process.Kill()
-			})
-		}
-
-		if err := command.Wait(); err != nil {
-			return err
-		}
-	}
-
-	return nil
+func main() {
+	cmd.Execute()
 }
