@@ -6,10 +6,26 @@ release:
   name_template: '{{.Tag}}'
 brews:
 - name: heimdall
+  github:
+    owner: dnoberon
+    name: homebrew-tap
   commit_author:
     name: goreleaserbot
     email: goreleaser@carlosbecker.com
-  install: bin.install "heimdall"
+  folder: Formula
+  caveats: How to use this binary
+  install: |
+    bin.install "program"
+    ...
+  description: Software to create fast and easy drum rolls.
+  homepage: https://github.com/dnoberon/heimdall
+  skip_upload: "false"
+  download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
+  url_template: http://github..com/dnoberon/heimdall/releases/{{ .Tag }}/{{ .ArtifactName
+    }}
+  custom_require: custom_download_strategy
+  ids:
+  - all
   goarm: "6"
 scoop:
   name: heimdall
