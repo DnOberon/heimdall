@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-go build -o ./heimdall bifrost/main.go
+go build -o ./heimdall main.go
 go test
