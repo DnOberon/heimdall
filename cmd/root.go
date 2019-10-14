@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/spf13/cobra"
 
@@ -47,12 +48,26 @@ development`,
 
 		repeat, _ := cmd.Flags().GetInt("repeat")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
+		toLog, _ := cmd.Flags().GetBool("log")
+		verbose, _ := cmd.Flags().GetBool("verbose")
+		rawReg, _ := cmd.Flags().GetString("logFilter")
 
 		config := bifrost.ManagerConfig{
 			AbsolutePath:     absolutePath,
+			Verbose:          verbose,
 			Repeat:           repeat,
 			ProgramArguments: args[1:],
+			Log:              toLog,
 			Timeout:          timeout}
+
+		if rawReg != "" {
+			regex, err := regexp.Compile(rawReg)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			config.LogFilter = regex
+		}
 
 		err = bifrost.Execute(config)
 		if err != nil {
@@ -78,7 +93,7 @@ func init() {
 	rootCmd.Flags().IntP("repeat", "r", 0, "Designate how many times to repeat your program with supplied arguments")
 	rootCmd.Flags().DurationP("timeout", "t", 0, "Designate when to kill your provided program")
 	rootCmd.Flags().BoolP("log", "l", false, "Toggle logging of provided program's stdout and stderr output to file")
-	rootCmd.Flags().StringP("logFilter", "lf", "", "Allows for log filtering via regex string. Use only valid with log flag")
+	rootCmd.Flags().StringP("logFilter", "f", "", "Allows for log filtering via regex string. Use only valid with log flag")
 	rootCmd.Flags().BoolP("verbose", "v", false, "Toggle display of provided program's stdout and stderr output while heimdall runs")
 }
 

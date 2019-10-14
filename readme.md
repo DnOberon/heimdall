@@ -1,10 +1,12 @@
 #### Installation
 
 If you have the Go toolchain installed you can simply run
-`go get github.com/dnoberon/heimdall` to install heimdall to $GOPATH/bin. If you want to run heimdall outside `$GOPATH/bin` make sure that `$GOPATt/bin` is [included in your \$PATH](https://golang.org/doc/code.html#GOPATH).
-If not, you can download any of heimdall’s releases for your platform [here](https://github.com/DnOberon/heimdall/releases). Future plans for heimdall include creating homebrew recipes as well as a few other package managers, but for now you’ll have to either build from source, use Go’s `get` command, or download the application manually.
+`go get github.com/dnoberon/heimdall` to install heimdall to `$GOPATH/bin`. If you want to run heimdall outside `$GOPATH/bin` make sure that `$GOPATH/bin` is [included in your \$PATH](https://golang.org/doc/code.html#GOPATH).
+If not, you can download any of heimdall’s releases for your platform [here](https://github.com/DnOberon/heimdall/releases). 
 
-The easiest way to get started with heimdall is to ask for its help menu.
+Future plans for heimdall include creating homebrew recipes as well as a few other package managers, but for now you’ll have to either build from source, use Go’s `get` command, or download the application manually.
+
+The easiest way to get started with heimdall after installation is to ask for its help menu.
 
 ```
 > heimdall -h
@@ -27,9 +29,10 @@ Flags:
 
 ```
 
-Let’s run through a quick example based on the problem that started this whole thing - a console application managing a third-party, hidden application. I want heimdall to filter the logs that both my application and the hidden one outputs as well as killing my application if it hangs.
+Let’s run through a quick example based on the problem that started this whole thing - a console application managing a third-party, hidden application. I want heimdall to filter the logs that both my application and the hidden one outputs as well (here we filter for < and > characters as long as there are n + 1 proceeding characters) as killing my application if it hangs.
 
 Telling heimdall to do that is easy -
+
 `heimdall --timeout=30m --log --logFilter=<[^<>]+> exportApplication`
 
 </br>

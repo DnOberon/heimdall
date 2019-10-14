@@ -29,7 +29,7 @@ func TestBifrostExecuteAndRepeat(t *testing.T) {
 
 func TestBifrostExecuteTimeout(t *testing.T) {
 	timer := time.Now()
-	path, _ := filepath.Abs("heimdall")
+	path, _ := filepath.Abs("../heimdall")
 
 	hProcess := exec.Command(path, "--repeat=1", "--timeout=10s", "tester", "30")
 
