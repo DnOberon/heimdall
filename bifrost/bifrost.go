@@ -87,6 +87,8 @@ func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interfac
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 
+	// while we could make a single function and simply assign the output writer, I choose to keep stdout and stderr
+	// separate for ease of reading and understanding by those new to Go.
 	go func() {
 		rd := bufio.NewReader(stdout)
 
@@ -110,7 +112,6 @@ func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interfac
 			}
 
 		}
-		// do something with stdout
 		close(stdoutDone)
 	}()
 
@@ -137,7 +138,6 @@ func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interfac
 			}
 		}
 
-		// do something with stderr
 		close(stderrDone)
 	}()
 
