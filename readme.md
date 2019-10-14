@@ -11,7 +11,7 @@ go get github.com/dnoberon/heimdall
 ```
 
 If you want to run heimdall outside `$GOPATH/bin` make sure that `$GOPATH/bin` is [included in your \$PATH](https://golang.org/doc/code.html#GOPATH).
-If not, you can download  heimdall’s releases for your platform [here](https://github.com/DnOberon/heimdall/releases
+If not, you can download  heimdall’s releases for your platform [here](https://github.com/DnOberon/heimdall/releases).
 
 ## How to use `heimdall`
 
