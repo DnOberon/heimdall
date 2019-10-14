@@ -1,3 +1,8 @@
+ Heimdall
+----
+[![GoDoc](https://godoc.org/github.com/DnOberon/heimdall/bifrost?status.svg)](https://godoc.org/github.com/DnOberon/heimdall/bifrost)
+
+
 #### Installation
 
 If you have the Go toolchain installed you can simply run

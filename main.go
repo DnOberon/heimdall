@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package heimdall encompasses all functions related to the short-lived process manager by the same name. Heimdall
+// Command heimdall encompasses all functions related to the short-lived process manager by the same name. Heimdall
 // was the ever-vigilant guardian of the gods' stronghold, Asgard - now he will be the guardian of whichever program you choose.
 // Heimdall is designed as both launcher and monitor of short-lived CLI tools and programs. Heimdall provides the ability
 // to automatically repeat a process, kill a hung process started with the tool, and log the programs output (filtering logs
 // is also possible). It is hoped that heimdall and bifrost will be a tool you reach for again and again when developing your CLI tool.
-
 package main
 
 import "github.com/dnoberon/heimdall/cmd"

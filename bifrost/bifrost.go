@@ -17,7 +17,6 @@
 // Heimdall is designed as both launcher and monitor of short-lived CLI tools and programs. Heimdall provides the ability
 // to automatically repeat a process, kill a hung process started with the tool, and log the programs output (filtering logs
 // is also possible). It is hoped that heimdall and bifrost will be a tool you reach for again and again when developing your CLI tool.
-
 package bifrost
 
 import (
@@ -28,6 +27,7 @@ import (
 	"time"
 )
 
+// ManagerConfig manages configuration for the bifrost execution function
 type ManagerConfig struct {
 	AbsolutePath     string
 	ProgramArguments []string
