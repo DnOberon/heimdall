@@ -1,3 +1,23 @@
+// Copyright 2019 John Darrington johnw.darrington@gmail.com
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License
+
+// Package bifrost encompasses all functions related to the short-lived process manager by the same name. Heimdall
+// was the ever-vigilant guardian of the gods' stronghold, Asgard - now he will be the guardian of whichever program you choose.
+// Heimdall is designed as both launcher and monitor of short-lived CLI tools and programs. Heimdall provides the ability
+// to automatically repeat a process, kill a hung process started with the tool, and log the programs output (filtering logs
+// is also possible). It is hoped that heimdall and bifrost will be a tool you reach for again and again when developing your CLI tool.
+
 package bifrost
 
 import (
@@ -18,83 +38,19 @@ type ManagerConfig struct {
 	LogFilter        *regexp.Regexp
 }
 
+// Execute accepts a configuration and attempts to run the provided program and its arguments.
 func Execute(config ManagerConfig) error {
 	return execute(config)
 }
 
 func execute(config ManagerConfig) error {
-	config.Repeat++
+	config.Repeat++ // we need to run at least once and defaults should be set here, not by the caller
 
 	for i := 0; i < config.Repeat; i++ {
 		command := exec.Command(config.AbsolutePath, config.ProgramArguments...)
-		log, err := os.Create("heimdall.log")
-		if err != nil {
-			return err
-		}
 
-		stdoutDone := make(chan interface{})
-		stderrDone := make(chan interface{})
-
-		stdout, _ := command.StdoutPipe()
-		stderr, _ := command.StderrPipe()
-
-		go func() {
-			rd := bufio.NewReader(stdout)
-
-			for {
-				str, err := rd.ReadString('\n')
-				if err != nil {
-					break
-				}
-
-				if config.Verbose {
-					os.Stdout.Write([]byte(str))
-				}
-
-				if config.Log {
-					if config.LogFilter != nil {
-						if config.LogFilter.MatchString(str) {
-							log.Write([]byte(str))
-						}
-					} else {
-						log.Write([]byte(str))
-					}
-				}
-
-			}
-			// do something with stdout
-			close(stdoutDone)
-		}()
-
-		go func() {
-			rd := bufio.NewReader(stderr)
-
-			for {
-				str, err := rd.ReadString('\n')
-				if err != nil {
-					break
-				}
-
-				if config.Verbose {
-					os.Stdout.Write([]byte(str))
-				}
-
-				if config.Log {
-					if config.LogFilter != nil {
-						if config.LogFilter.MatchString(str) {
-							log.Write([]byte(str))
-						}
-					} else {
-						log.Write([]byte(str))
-					}
-				}
-			}
-
-			// do something with stderr
-			close(stderrDone)
-		}()
-
-		// everything else
+		// attachment of reader/writers to command execution
+		stdoutDone, stderrDone := attachLogger(command, config)
 
 		if err := command.Start(); err != nil {
 			return err
@@ -109,9 +65,81 @@ func execute(config ManagerConfig) error {
 		if err := command.Wait(); err != nil {
 			return err
 		}
-		<-stdoutDone
-		<-stderrDone
+
+		// we're not going to wait on these to finish if we don't need them. Helps us avoid infinite loops if we somehow
+		// screwed up the reader/write initiation
+		if config.LogFilter != nil || config.Log || config.Verbose {
+			<-stdoutDone
+			<-stderrDone
+		}
+
 	}
 
 	return nil
+}
+
+func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interface{}, stderrDone chan interface{}) {
+	log, _ := os.Create("heimdall.log")
+
+	stdoutDone = make(chan interface{})
+	stderrDone = make(chan interface{})
+
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
+
+	go func() {
+		rd := bufio.NewReader(stdout)
+
+		for {
+			str, err := rd.ReadString('\n')
+			if err != nil {
+				break
+			}
+
+			if config.Verbose && log != nil {
+				os.Stdout.Write([]byte(str))
+			}
+
+			if config.LogFilter != nil {
+				if config.LogFilter.MatchString(str) {
+					log.Write([]byte(str))
+				}
+
+			} else if config.Log {
+				log.Write([]byte(str))
+			}
+
+		}
+		// do something with stdout
+		close(stdoutDone)
+	}()
+
+	go func() {
+		rd := bufio.NewReader(stderr)
+
+		for {
+			str, err := rd.ReadString('\n')
+			if err != nil {
+				break
+			}
+
+			if config.Verbose {
+				os.Stdout.Write([]byte(str))
+			}
+
+			if config.LogFilter != nil {
+				if config.LogFilter.MatchString(str) {
+					log.Write([]byte(str))
+				}
+
+			} else if config.Log {
+				log.Write([]byte(str))
+			}
+		}
+
+		// do something with stderr
+		close(stderrDone)
+	}()
+
+	return stdoutDone, stderrDone
 }
