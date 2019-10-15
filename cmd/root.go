@@ -101,7 +101,7 @@ func init() {
 	rootCmd.Flags().IntP("repeat", "r", 1, "Designate how many times to repeat your program with supplied arguments")
 	rootCmd.Flags().DurationP("timeout", "t", 0, "Designate when to kill your provided program")
 
-	rootCmd.Flags().IntP("parallelCount", "p", 1, "Designate how many times to repeat your program with supplied arguments")
+	rootCmd.Flags().IntP("parallelCount", "p", 1, "Designate how many instances of your should run in parallel at one time")
 
 	rootCmd.Flags().BoolP("log", "l", false, "Toggle logging of provided program's stdout and stderr output to file, appends if file exists")
 	rootCmd.Flags().String("logName", "heimdall.log", "Specify the log file name, defaults to heimdall.log")

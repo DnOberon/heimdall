@@ -41,7 +41,7 @@ Flags:
       --logFilter string    Allows for log filtering via regex string. Use only valid with log flag
       --logName string      Specify the log file name, defaults to heimdall.log (default "heimdall.log")
       --logOverwrite        Toggle logging of provided program's stdout and stderr output to file
-  -p, --parallelCount int   Designate how many times to repeat your program with supplied arguments (default 1)
+  -p, --parallelCount int   Designate how many instances of your should run in parallel at one time 
   -r, --repeat int          Designate how many times to repeat your program with supplied arguments (default 1)
   -t, --timeout duration    Designate when to kill your provided program
   -v, --verbose             Toggle display of provided program's stdout and stderr output while heimdall runs
