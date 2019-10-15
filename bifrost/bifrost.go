@@ -21,9 +21,11 @@ package bifrost
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
+	"sync"
 	"time"
 )
 
@@ -31,11 +33,21 @@ import (
 type ManagerConfig struct {
 	AbsolutePath     string
 	ProgramArguments []string
-	Timeout          time.Duration
-	Repeat           int
-	Verbose          bool
-	Log              bool
-	LogFilter        *regexp.Regexp
+
+	Timeout time.Duration
+	Repeat  int
+
+	InParallelCount int
+
+	Log          bool
+	LogName      string
+	LogOverwrite bool
+	LogFilter    *regexp.Regexp
+	Verbose      bool
+
+	logFile *os.File
+	lock    *sync.Mutex
+	wg      sync.WaitGroup
 }
 
 // Execute accepts a configuration and attempts to run the provided program and its arguments.
@@ -44,43 +56,73 @@ func Execute(config ManagerConfig) error {
 }
 
 func execute(config ManagerConfig) error {
-	config.Repeat++ // we need to run at least once and defaults should be set here, not by the caller
+	config.lock = &sync.Mutex{}
+	config.wg = sync.WaitGroup{}
 
-	for i := 0; i < config.Repeat; i++ {
-		command := exec.Command(config.AbsolutePath, config.ProgramArguments...)
-
-		// attachment of reader/writers to command execution
-		stdoutDone, stderrDone := attachLogger(command, config)
-
-		if err := command.Start(); err != nil {
+	if config.Log && config.LogOverwrite {
+		f, err := os.Create(config.LogName)
+		if err != nil {
 			return err
 		}
 
-		if config.Timeout > 0 {
-			time.AfterFunc(config.Timeout, func() {
-				command.Process.Kill()
-			})
-		}
+		defer f.Close()
 
-		if err := command.Wait(); err != nil {
+		config.logFile = f
+	} else if config.Log {
+		f, err := os.OpenFile(config.LogName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
 			return err
 		}
 
-		// we're not going to wait on these to finish if we don't need them. Helps us avoid infinite loops if we somehow
-		// screwed up the reader/write initiation
-		if config.LogFilter != nil || config.Log || config.Verbose {
-			<-stdoutDone
-			<-stderrDone
-		}
+		defer f.Close()
+
+		config.logFile = f
+	}
+
+	for p := 0; p < config.InParallelCount; p++ {
+		config.wg.Add(1)
+
+		go func() {
+			for i := 0; i < config.Repeat; i++ {
+				command := exec.Command(config.AbsolutePath, config.ProgramArguments...)
+
+				// attachment of reader/writers to command execution
+				stdoutDone, stderrDone := attachLogger(command, config)
+
+				if err := command.Start(); err != nil {
+					//return err
+				}
+
+				if config.Timeout > 0 {
+					time.AfterFunc(config.Timeout, func() {
+						command.Process.Kill()
+					})
+				}
+
+				if err := command.Wait(); err != nil {
+					//	return err
+				}
+
+				// we're not going to wait on these to finish if we don't need them. Helps us avoid infinite loops if we somehow
+				// screwed up the reader/write initiation
+				if config.LogFilter != nil || config.Log || config.Verbose {
+					<-stdoutDone
+					<-stderrDone
+				}
+
+			}
+
+			config.wg.Done()
+		}()
 
 	}
+
+	config.wg.Wait()
 
 	return nil
 }
 
 func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interface{}, stderrDone chan interface{}) {
-	log, _ := os.Create("heimdall.log")
-
 	stdoutDone = make(chan interface{})
 	stderrDone = make(chan interface{})
 
@@ -98,17 +140,23 @@ func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interfac
 				break
 			}
 
-			if config.Verbose && log != nil {
-				os.Stdout.Write([]byte(str))
+			out := fmt.Sprintf("[H-PID:%d %s]  %s", cmd.Process.Pid, time.Now().UTC().Format("06-01-02 15:04:05"), str)
+
+			if config.Verbose {
+				os.Stdout.Write([]byte(out))
 			}
 
 			if config.LogFilter != nil {
 				if config.LogFilter.MatchString(str) {
-					log.Write([]byte(str))
+					config.lock.Lock()
+					config.logFile.Write([]byte(out))
+					config.lock.Unlock()
 				}
 
 			} else if config.Log {
-				log.Write([]byte(str))
+				config.lock.Lock()
+				config.logFile.Write([]byte(out))
+				config.lock.Unlock()
 			}
 
 		}
@@ -124,17 +172,23 @@ func attachLogger(cmd *exec.Cmd, config ManagerConfig) (stdoutDone chan interfac
 				break
 			}
 
+			out := fmt.Sprintf("[H-PID:%d %s]  %s", cmd.Process.Pid, time.Now().UTC().Format("06-01-02 15:04:05"), str)
+
 			if config.Verbose {
-				os.Stdout.Write([]byte(str))
+				os.Stdout.Write([]byte(out))
 			}
 
 			if config.LogFilter != nil {
 				if config.LogFilter.MatchString(str) {
-					log.Write([]byte(str))
+					config.lock.Lock()
+					config.logFile.Write([]byte(out))
+					config.lock.Unlock()
 				}
 
 			} else if config.Log {
-				log.Write([]byte(str))
+				config.lock.Lock()
+				config.logFile.Write([]byte(out))
+				config.lock.Unlock()
 			}
 		}
 

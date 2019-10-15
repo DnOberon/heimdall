@@ -17,11 +17,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dnoberon/heimdall/bifrost"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/dnoberon/heimdall/bifrost"
 
 	"github.com/spf13/cobra"
 
@@ -48,16 +49,24 @@ development`,
 
 		repeat, _ := cmd.Flags().GetInt("repeat")
 		timeout, _ := cmd.Flags().GetDuration("timeout")
+
+		parallelCount, _ := cmd.Flags().GetInt("parallelCount")
+
 		toLog, _ := cmd.Flags().GetBool("log")
-		verbose, _ := cmd.Flags().GetBool("verbose")
+		logName, _ := cmd.Flags().GetString("logName")
+		logOverwrite, _ := cmd.Flags().GetBool("logOverwrite")
 		rawReg, _ := cmd.Flags().GetString("logFilter")
+		verbose, _ := cmd.Flags().GetBool("verbose")
 
 		config := bifrost.ManagerConfig{
 			AbsolutePath:     absolutePath,
 			Verbose:          verbose,
 			Repeat:           repeat,
 			ProgramArguments: args[1:],
+			InParallelCount:  parallelCount,
 			Log:              toLog,
+			LogName:          logName,
+			LogOverwrite:     logOverwrite,
 			Timeout:          timeout}
 
 		if rawReg != "" {
@@ -89,11 +98,15 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bifrost.yaml)")
-	rootCmd.Flags().IntP("repeat", "r", 0, "Designate how many times to repeat your program with supplied arguments")
+	rootCmd.Flags().IntP("repeat", "r", 1, "Designate how many times to repeat your program with supplied arguments")
 	rootCmd.Flags().DurationP("timeout", "t", 0, "Designate when to kill your provided program")
-	rootCmd.Flags().BoolP("log", "l", false, "Toggle logging of provided program's stdout and stderr output to file")
-	rootCmd.Flags().StringP("logFilter", "f", "", "Allows for log filtering via regex string. Use only valid with log flag")
+
+	rootCmd.Flags().IntP("parallelCount", "p", 1, "Designate how many times to repeat your program with supplied arguments")
+
+	rootCmd.Flags().BoolP("log", "l", false, "Toggle logging of provided program's stdout and stderr output to file, appends if file exists")
+	rootCmd.Flags().String("logName", "heimdall.log", "Specify the log file name, defaults to heimdall.log")
+	rootCmd.Flags().Bool("logOverwrite", false, "Toggle logging of provided program's stdout and stderr output to file")
+	rootCmd.Flags().String("logFilter", "", "Allows for log filtering via regex string. Use only valid with log flag")
 	rootCmd.Flags().BoolP("verbose", "v", false, "Toggle display of provided program's stdout and stderr output while heimdall runs")
 }
 
