@@ -9,7 +9,6 @@ brews:
   commit_author:
     name: goreleaserbot
     email: goreleaser@carlosbecker.com
-  install: bin.install "heimdall"
   goarm: "6"
 scoop:
   name: heimdall
@@ -19,18 +18,21 @@ scoop:
 builds:
 - id: heimdall
   goos:
-  - linux
-  - darwin
+  - freebsd
+  - windows
   goarch:
   - amd64
   - "386"
+  - arm
+  - arm64
   goarm:
   - "6"
   targets:
-  - linux_amd64
-  - linux_386
-  - darwin_amd64
-  - darwin_386
+  - freebsd_amd64
+  - freebsd_386
+  - freebsd_arm_6
+  - windows_amd64
+  - windows_386
   main: .
   ldflags:
   - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
@@ -52,6 +54,9 @@ archives:
     linux: Linux
     windows: Windows
   format: tar.gz
+  format_overrides:
+  - goos: windows
+    format: zip
   files:
   - licence*
   - LICENCE*
