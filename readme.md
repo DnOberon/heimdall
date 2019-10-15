@@ -6,7 +6,6 @@ Heimdall allows you to manage and monitor command line applications. Provided wi
 
 * Repeat the command n times
 * Run command in parallel in n instances
-* Log command's output
 * Filter and log command's output
 * Kill hung applications through user specified timeout
 
