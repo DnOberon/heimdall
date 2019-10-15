@@ -2,6 +2,14 @@
 ----
 [![GoDoc](https://godoc.org/github.com/DnOberon/heimdall/bifrost?status.svg)](https://godoc.org/github.com/DnOberon/heimdall/bifrost)
 
+Heimdall allows you to manage and monitor command line applications. Provided with an executable or command to run `heimdall` can perform the following operations:
+
+* Repeat the command n times
+* Run command in parallel in n instances
+* Log command's output
+* Filter and log command's output
+* Kill hung applications through user specified timeout
+
 
 
 ## Install
@@ -29,12 +37,15 @@ Usage:
   heimdall [flags]
 
 Flags:
-  -h, --help               help for heimdall
-  -l, --log                Toggle logging of provided program's stdout and stderr output to file
-  -f, --logFilter string   Allows for log filtering via regex string. Use only valid with log flag
-  -r, --repeat int         Designate how many times to repeat your program with supplied arguments
-  -t, --timeout duration   Designate when to kill your provided program
-  -v, --verbose            Toggle display of provided program's stdout and stderr output while heimdall runs
+  -h, --help                help for heimdall
+  -l, --log                 Toggle logging of provided program's stdout and stderr output to file, appends if file exists
+      --logFilter string    Allows for log filtering via regex string. Use only valid with log flag
+      --logName string      Specify the log file name, defaults to heimdall.log (default "heimdall.log")
+      --logOverwrite        Toggle logging of provided program's stdout and stderr output to file
+  -p, --parallelCount int   Designate how many times to repeat your program with supplied arguments (default 1)
+  -r, --repeat int          Designate how many times to repeat your program with supplied arguments (default 1)
+  -t, --timeout duration    Designate when to kill your provided program
+  -v, --verbose             Toggle display of provided program's stdout and stderr output while heimdall runs
 
 ```
 
