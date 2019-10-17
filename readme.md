@@ -34,6 +34,11 @@ development
 
 Usage:
   heimdall [flags]
+  
+Available Commands:
+  help        Help about any command
+  init        Create a configuration for heimdall to replace command flag arguments
+  run         Run heimdall using the "heimdall_config.json" file in the current directory 
 
 Flags:
   -h, --help                help for heimdall
@@ -48,13 +53,32 @@ Flags:
 
 ```
 
-Let’s run through a quick example based on the problem that started this whole thing - a console application managing a third-party, hidden application. 
+Let’s run through a quick example based on the problem that started sthis whole thing - a console application managing a third-party, hidden application. 
 
 I want heimdall to filter the logs that both my application and the hidden one outputs as well (here we filter for < and > characters as long as there is at least 1 preceding character) as killing my application if it hangs.
 
 Telling heimdall to do that is easy -
 
 `heimdall --timeout=30m --log --logFilter=<[^<>]+> exportApplication`
+
+</br>
+
+## Running `heimdall` with a configuration file
+
+This tool provides the option of generating a json configuration file for ease of use. All command line flag arguments are available and represented inside the configuration file.
+
+First, generate your configuration file using the `heimdall init` command and following the interactive prompts.
+
+```console
+> heimdall init
+Executable path: tester
+✔ Program arguments separated by comma: █
+
+```
+
+Once your configuration file is generated you can run heimdall with a single command -
+
+`heimdall run`
 
 ## Can't you do this with a bash or powershell script?
 You sure could - but you'd have to spend the time to build it, have separate scripts for at least windows and linux systems, and if you're using someone elses script, modify it to the point that it's going to work for your particular situation. You'll also have to handle multi-threading and logging yourself.

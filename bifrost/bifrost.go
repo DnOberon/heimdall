@@ -34,8 +34,9 @@ type ManagerConfig struct {
 	AbsolutePath     string
 	ProgramArguments []string
 
-	Timeout time.Duration
-	Repeat  int
+	Timeout       time.Duration `json:"-"`
+	TimeoutString string
+	Repeat        int
 
 	InParallelCount int
 
