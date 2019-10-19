@@ -82,10 +82,14 @@ Once your configuration file is generated you can run heimdall with a single com
 
 Your configuration file, `heimdall_config.json` is available in the directory you first ran `heimdall init` in. To make changes you can edit this file directly or rerun `heimdall init`
 
+</br>
+
 ## Can't you do this with a bash or powershell script?
-You sure could - but you'd have to spend the time to build it, have separate scripts for at least windows and linux systems, and if you're using someone elses script, modify it to the point that it's going to work for your particular situation. You'll also have to handle multi-threading and logging yourself.
+You sure could - but you'd have to spend the time to build it, have separate scripts for at least windows and linux systems, or if you're using someone else's script, modify it to the point that it's going to work for your particular situation. You'll also have to handle multi-threading and logging yourself.
 
 `heimdall` is meant to be extremely easy to use across platforms and applications by design. You shouldn't have to write some complicated scripts to achieve what `heimdall` can do with a single command.
+
+</br>
 
 ## More information
 
